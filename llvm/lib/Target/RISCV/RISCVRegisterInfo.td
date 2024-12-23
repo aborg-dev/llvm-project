@@ -16,6 +16,9 @@ class RISCVReg<bits<5> Enc, string n, list<string> alt = []> : Register<n> {
   let AltNames = alt;
 }
 
+class ZiskReg<string n> : Register<n> {
+}
+
 class RISCVRegWithSubRegs<bits<5> Enc, string n, list<Register> subregs,
                           list<string> alt = []>
       : RegisterWithSubRegs<n, subregs> {
@@ -145,6 +148,8 @@ class RISCVRegisterClass<list<ValueType> regTypes, int align, dag regList>
   let TSFlags{6-4} = !sub(NF, 1);
 }
 
+def I64_0 : ZiskReg<"%i64.0">;
+
 class GPRRegisterClass<dag regList>
     : RISCVRegisterClass<[XLenVT, XLenFVT, i32], 32, regList> {
   let RegInfos = XLenRI;
@@ -158,6 +163,7 @@ def GPR : GPRRegisterClass<(add (sequence "X%u", 10, 17),
                                 (sequence "X%u", 8, 9),
                                 (sequence "X%u", 18, 27),
                                 (sequence "X%u", 0, 4))>;
+// def GPR : GPRRegisterClass<(add X0, I64_0, X1, X2, X3, X4, X5)>;
 
 def GPRX0 : GPRRegisterClass<(add X0)>;
 def GPRX1 : GPRRegisterClass<(add X1)>;
@@ -179,6 +185,7 @@ def GPRJALRNonX7 : GPRRegisterClass<(sub GPRJALR, X7)>;
 
 def GPRC : GPRRegisterClass<(add (sequence "X%u", 10, 15),
                                  (sequence "X%u", 8, 9))>;
+// def GPRC : GPRRegisterClass<(add X0, I64_0, X1, X2, X3, X4, X5)>;
 
 // For indirect tail calls, we can't use callee-saved registers, as they are
 // restored to the saved value before the tail call, which would clobber a call

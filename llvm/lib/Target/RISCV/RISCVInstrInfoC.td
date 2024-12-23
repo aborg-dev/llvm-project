@@ -931,23 +931,6 @@ def : CompressPat<(SRAI GPRC:$rs1, GPRC:$rs1, uimmlog2xlennonzero:$imm),
                   (C_SRAI GPRC:$rs1, uimmlog2xlennonzero:$imm)>;
 def : CompressPat<(ANDI GPRC:$rs1, GPRC:$rs1, simm6:$imm),
                   (C_ANDI GPRC:$rs1, simm6:$imm)>;
-def : CompressPat<(SUB GPRC:$rs1, GPRC:$rs1, GPRC:$rs2),
-                  (C_SUB GPRC:$rs1, GPRC:$rs2)>;
-def : CompressPat<(XOR GPRC:$rs1, GPRC:$rs1, GPRC:$rs2),
-                  (C_XOR GPRC:$rs1, GPRC:$rs2)>;
-let isCompressOnly = true in
-def : CompressPat<(XOR GPRC:$rs1, GPRC:$rs2, GPRC:$rs1),
-                  (C_XOR GPRC:$rs1, GPRC:$rs2)>;
-def : CompressPat<(OR GPRC:$rs1, GPRC:$rs1, GPRC:$rs2),
-                  (C_OR GPRC:$rs1, GPRC:$rs2)>;
-let isCompressOnly = true in
-def : CompressPat<(OR GPRC:$rs1, GPRC:$rs2, GPRC:$rs1),
-                  (C_OR GPRC:$rs1, GPRC:$rs2)>;
-def : CompressPat<(AND GPRC:$rs1, GPRC:$rs1, GPRC:$rs2),
-                  (C_AND GPRC:$rs1, GPRC:$rs2)>;
-let isCompressOnly = true in
-def : CompressPat<(AND GPRC:$rs1, GPRC:$rs2, GPRC:$rs1),
-                  (C_AND GPRC:$rs1, GPRC:$rs2)>;
 } // Predicates = [HasStdExtCOrZca]
 
 let Predicates = [HasStdExtCOrZca, IsRV64] in {
@@ -1007,23 +990,12 @@ def : CompressPat<(LD GPRNoX0:$rd, SPMem:$rs1, uimm9_lsb000:$imm),
 let Predicates = [HasStdExtCOrZca] in {
 def : CompressPat<(JALR X0, GPRNoX0:$rs1, 0),
                   (C_JR GPRNoX0:$rs1)>;
-let isCompressOnly = true in {
-def : CompressPat<(ADD GPRNoX0:$rs1, X0, GPRNoX0:$rs2),
-                  (C_MV GPRNoX0:$rs1, GPRNoX0:$rs2)>;
-def : CompressPat<(ADD GPRNoX0:$rs1, GPRNoX0:$rs2, X0),
-                  (C_MV GPRNoX0:$rs1, GPRNoX0:$rs2)>;
-}
 def : CompressPat<(ADDI GPRNoX0:$rs1, GPRNoX0:$rs2, 0),
                   (C_MV GPRNoX0:$rs1, GPRNoX0:$rs2)>;
 def : CompressPat<(EBREAK), (C_EBREAK)>;
 def : CompressPat<(UNIMP), (C_UNIMP)>;
 def : CompressPat<(JALR X1, GPRNoX0:$rs1, 0),
                   (C_JALR GPRNoX0:$rs1)>;
-def : CompressPat<(ADD GPRNoX0:$rs1, GPRNoX0:$rs1, GPRNoX0:$rs2),
-                  (C_ADD GPRNoX0:$rs1, GPRNoX0:$rs2)>;
-let isCompressOnly = true in
-def : CompressPat<(ADD GPRNoX0:$rs1, GPRNoX0:$rs2, GPRNoX0:$rs1),
-                  (C_ADD GPRNoX0:$rs1, GPRNoX0:$rs2)>;
 } // Predicates = [HasStdExtCOrZca]
 
 let Predicates = [HasStdExtCOrZcd, HasStdExtD] in {

@@ -342,6 +342,8 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI,
     return;
   }
 
+  unsigned MIFrm = RISCVII::getFormat(Desc.TSFlags);
+
   switch (Size) {
   default:
     llvm_unreachable("Unhandled encodeInstruction length!");
@@ -353,6 +355,18 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI,
   case 4: {
     uint32_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
     support::endian::write(CB, Bits, llvm::endianness::little);
+
+    // Emit a longer zisk instruction.
+    if (MIFrm == RISCVII::InstFormatCSH) {
+      // MCInst TmpInst = MCInstBuilder(RISCV::ADD)
+      //                      .addReg(RISCV::X0)
+      //                      .addReg(RISCV::X0)
+      //                      .addImm(0);
+      // uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+      uint32_t Binary = 0xdeadbeef;
+      support::endian::write(CB, Binary, llvm::endianness::little);
+      support::endian::write(CB, Binary, llvm::endianness::little);
+    }
     break;
   }
   }

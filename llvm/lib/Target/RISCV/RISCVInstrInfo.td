@@ -563,6 +563,12 @@ class ALU_rr<bits<7> funct7, bits<3> funct3, string opcodestr,
   let isCommutable = Commutable;
 }
 
+let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
+class ALU_rr_zisk<string opcodestr, bit Commutable = 0>
+    : ZiskInst<(outs GPR:$rd), (ins GPR:$rs1, GPR:$rs2), opcodestr, "$rd, $rs1, $rs2"> {
+  let isCommutable = Commutable;
+}
+
 let hasNoSchedulingInfo = 1,
     hasSideEffects = 1, mayLoad = 0, mayStore = 0 in
 class CSR_ir<bits<3> funct3, string opcodestr>
@@ -667,8 +673,12 @@ def SRAI : Shift_ri<0b01000, 0b101, "srai">;
 
 def ADD  : ALU_rr<0b0000000, 0b000, "add", Commutable=1>,
            Sched<[WriteIALU, ReadIALU, ReadIALU]>;
+// def ADD_ZISK : ALU_rr_zisk<"add", Commutable=1>,
+//                Sched<[WriteIALU, ReadIALU, ReadIALU]>;
 def SUB  : ALU_rr<0b0100000, 0b000, "sub">,
            Sched<[WriteIALU, ReadIALU, ReadIALU]>;
+def SUB_ZISK : ALU_rr_zisk<"sub", Commutable=1>,
+               Sched<[WriteIALU, ReadIALU, ReadIALU]>;
 def SLL  : ALU_rr<0b0000000, 0b001, "sll">,
            Sched<[WriteShiftReg, ReadShiftReg, ReadShiftReg]>;
 let IsSignExtendingOpW = 1 in {
@@ -1191,6 +1201,9 @@ class PatGpr<SDPatternOperator OpNode, RVInst Inst, ValueType vt = XLenVT>
 class PatGprGpr<SDPatternOperator OpNode, RVInst Inst, ValueType vt1 = XLenVT,
                 ValueType vt2 = XLenVT>
     : Pat<(vt1 (OpNode (vt1 GPR:$rs1), (vt2 GPR:$rs2))), (Inst GPR:$rs1, GPR:$rs2)>;
+class PatGprGprZisk<SDPatternOperator OpNode, ZiskInst Inst, ValueType vt1 = XLenVT,
+                ValueType vt2 = XLenVT>
+    : Pat<(vt1 (OpNode (vt1 GPR:$rs1), (vt2 GPR:$rs2))), (Inst GPR:$rs1, GPR:$rs2)>;
 
 class PatGprImm<SDPatternOperator OpNode, RVInst Inst, ImmLeaf ImmType,
                 ValueType vt = XLenVT>
@@ -1255,8 +1268,10 @@ def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
 /// Simple arithmetic operations
 
 def : PatGprGpr<add, ADD>;
+// def : PatGprGprZisk<add, ADD_ZISK>;
 def : PatGprSimm12<add, ADDI>;
-def : PatGprGpr<sub, SUB>;
+def : PatGprGprZisk<sub, SUB_ZISK>;
+// def : PatGprGpr<sub, SUB>;
 def : PatGprGpr<or, OR>;
 def : PatGprSimm12<or, ORI>;
 def : PatGprGpr<and, AND>;

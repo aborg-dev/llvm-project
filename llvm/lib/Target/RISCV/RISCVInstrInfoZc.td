@@ -270,14 +270,6 @@ def CM_JALT : RVInst16CJ<0b101, 0b10, (outs), (ins uimm8ge32:$index),
 } // DecoderNamespace = "RVZcmt", Predicates = [HasStdExtZcmt]...
 
 
-let Predicates = [HasStdExtZcb, HasStdExtZmmul] in{
-def : CompressPat<(MUL GPRC:$rs1, GPRC:$rs1, GPRC:$rs2),
-                  (C_MUL GPRC:$rs1, GPRC:$rs2)>;
-let isCompressOnly = true in
-def : CompressPat<(MUL GPRC:$rs1, GPRC:$rs2, GPRC:$rs1),
-                  (C_MUL GPRC:$rs1, GPRC:$rs2)>;
-} // Predicates = [HasStdExtZcb, HasStdExtZmmul]
-
 let Predicates = [HasStdExtZcb, HasStdExtZbb] in{
 def : CompressPat<(SEXT_B GPRC:$rs1, GPRC:$rs1),
                   (C_SEXT_B GPRC:$rs1, GPRC:$rs1)>;

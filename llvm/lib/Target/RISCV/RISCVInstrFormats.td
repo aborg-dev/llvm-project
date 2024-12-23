@@ -455,6 +455,21 @@ class RVInstU<RISCVOpcode opcode, dag outs, dag ins, string opcodestr,
   let Inst{6-0} = opcode.Value;
 }
 
+class ZiskInst<dag outs, dag ins, string opcodestr, string argstr>
+    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatCSH> {
+  bits<5> rs2;
+  bits<5> rs1;
+  bits<5> rd;
+
+  let Inst{31-25} = 1;       // Fixed bits for ZISK R-type
+  let Inst{24-20} = rs2;
+  let Inst{19-15} = rs1;
+  let Inst{14-12} = 1;       // funct3
+  let Inst{6-0} = OPC_CUSTOM_0.Value;
+  // field bits<256> Payload = 0;
+  // let Size = 36;
+}
+
 class RVInstJ<RISCVOpcode opcode, dag outs, dag ins, string opcodestr,
               string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatJ> {

@@ -1,0 +1,9 @@
+// Static tasks configuration.
+//
+// Example:
+[
+  {
+    "label": "Rebuild llvm",
+    "command": "bash ../../rebuild.sh && sleep 1"
+  }
+]
